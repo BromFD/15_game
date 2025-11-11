@@ -113,7 +113,7 @@ class _UIState extends State<UI> {
                                 ),
                                 PopupMenuItem(
                                   value: 'movement',
-                                  child: Text('IJKL - двигать плитку'),
+                                  child: Text('Enter - двигать плитку'),
                                 ),
                                 PopupMenuItem(
                                   value: 'autors',

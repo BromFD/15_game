@@ -7,7 +7,8 @@ class ShuffleProvider extends ChangeNotifier{
   final int colCount = 4;
   bool isGameStarted = false;
   bool isVictory = false;
-  int? selectedIndex;
+  int? selectedRow;
+  int? selectedCol;
   List<int> constGridData = [];
   List<List<int>> grid2DimData = [];
 
@@ -16,18 +17,21 @@ class ShuffleProvider extends ChangeNotifier{
     genGridData();
   }
 
-  void switchSelectedIndex() {
-    if (selectedIndex == null){
-      selectedIndex = 0;
+  void switchSelectedPosition() {
+    if (selectedRow == null && selectedCol == null){
+      selectedRow = 0;
+      selectedCol = 0;
     }
     else {
-      selectedIndex = null;
+      selectedRow = null;
+      selectedCol = null;
     };
     notifyListeners();
   }
 
-  void setSelectedIndex(int index) {
-    selectedIndex = index;
+  void setSelectedPosition(int row, int col) {
+    selectedRow = row;
+    selectedCol = col;
     notifyListeners();
   }
 
@@ -52,7 +56,8 @@ class ShuffleProvider extends ChangeNotifier{
   }
 
   void shuffleGrid() {
-    selectedIndex = selectedIndex == null ? selectedIndex : 0;
+    selectedRow = selectedRow == null ? selectedRow : 0;
+    selectedCol = selectedCol == null ? selectedCol : 0;
     while (true) {
       gridData.shuffle();
 
@@ -85,20 +90,28 @@ class ShuffleProvider extends ChangeNotifier{
   }
 
   void build2DimGrid(){
+    grid2DimData = [];
+    for (int i = 0; i < rowCount; i++) {
+      List<int> row = [];
+      for (int j = 0; j < colCount; j++) {
+        row.add(gridData[i * colCount + j]);
+      }
+      grid2DimData.add(row);
+      }
+    }
 
-  }
 
-  void swapTiles(int index1, int index2) {
-    int temp = gridData[index1];
-    gridData[index1] = gridData[index2];
-    gridData[index2] = temp;
-    selectedIndex = index2;
+  void swapTiles(int localSelectedRow, int localSelectedCol, int nullRow, int nullCol) {
+    int temp = grid2DimData[localSelectedRow][localSelectedCol];
+    grid2DimData[localSelectedRow][localSelectedCol] = grid2DimData[nullRow][nullCol];
+    grid2DimData[nullRow][nullCol] = temp;
     checkVictoryCondition();
     notifyListeners();
   }
 
   void checkVictoryCondition(){
-    if (listEquals(gridData, constGridData)){
+    List<int> backToFlat = grid2DimData.expand((row) => row).toList();
+    if (listEquals(backToFlat, constGridData)){
       isVictory = true;
       notifyListeners();
     }
